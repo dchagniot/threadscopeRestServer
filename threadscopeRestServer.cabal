@@ -34,7 +34,11 @@ library
   Extensions: RecordWildCards, NamedFieldPuns, BangPatterns, PatternGuards
   Other-Modules:     Events.HECs,
                      Events.EventDuration
-
+                     Events.EventTree,
+                     Events.ReadEvents,
+                     Events.SparkStats,
+                     Events.SparkTree,
+                     Events.TestEvents
 executable threadscopeRestServer-exe
   hs-source-dirs:      app
   main-is:             Main.hs
