@@ -1,5 +1,6 @@
 module Events.SparkTree (
   SparkTree,
+  SparkNode,
   sparkTreeMaxDepth,
   emptySparkTree,
   eventsToSparkDurations,
