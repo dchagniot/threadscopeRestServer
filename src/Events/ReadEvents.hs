@@ -1,5 +1,7 @@
 module Events.ReadEvents (
-    registerEventsFromFile, registerEventsFromTrace
+    registerEventsFromFile,
+    registerEventsFromTrace,
+    ProgressView
   ) where
 
 import Events.EventTree
@@ -73,7 +75,7 @@ rawEventsToHECs evs endTime
              (maxSparkPool, sparkD)  = eventsToSparkDurations nondiscrete
 
 -------------------------------------------------------------------------------
-newtype ProgressView = ProgressView (String -> IO ())
+type ProgressView = (String -> IO ())
 registerEventsFromFile :: String -> ProgressView
                        -> IO (HECs, String, Int, Double)
 registerEventsFromFile filename = registerEvents (Left filename)
