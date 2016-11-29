@@ -15,6 +15,7 @@ import Network.Wai.Handler.Warp
 import Servant
 import GHC.RTS.Events
 import qualified Data.Array as DA
+import qualified Data.IntMap as IM
 import Control.Monad.Trans (liftIO)
 
 import Events.HECs
@@ -62,20 +63,40 @@ $(deriveToJSON defaultOptions ''CapEvent)
 $(deriveToJSON defaultOptions ''HECs)
 
 type API = "test" :> Get '[JSON] MyHEC
+      :<|> "file" :> QueryParam "fileName" String :> Get '[JSON] MyHEC
 
 api :: Proxy API
 api = Proxy
-
-testTrace :: IO MyHEC
-testTrace = registerEventsFromTrace "trace" (\_ -> putStr "trace")
-
-startApp :: IO ()
-startApp = run 8080 app
 
 app :: Application
 app = serve api server
 
 server :: Server API
-server = do
-  hecs <- liftIO testTrace
-  return hecs
+server = test
+   :<|> file
+  where
+    test :: Handler MyHEC
+    test = liftIO (registerEventsFromTrace "trace" (\_ -> putStr "trace"))
+    file :: Maybe String -> Handler MyHEC
+    file x = case x of
+      Just fname -> liftIO (registerEventsFromFile fname (\_ -> putStr fname))
+      Nothing -> return emptymyHEC
+
+startApp :: IO ()
+startApp = run 8080 app
+
+emptymyHEC :: MyHEC
+emptymyHEC =  (HECs {hecCount=0,
+                  hecTrees=[],
+                  hecEventArray=DA.array (0,0) [],
+                  hecLastEventTime=0,
+                  maxSparkPool=0.0,
+                  minXHistogram=0,
+                  maxXHistogram=0,
+                  maxYHistogram=0,
+                  durHistogram=[],
+                  perfNames=IM.empty},
+                "no name given",
+                0,
+                0.0)
+
